@@ -1,54 +1,42 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdbool.h>
 
 const int SIZE = 30000;
+#define INCR '+'
+#define DECR '-'
+#define PREV '<'
+#define NEXT '>'
+#define OUTC '.'
+#define INPC ','
+#define LOOP_START '['
+#define LOOP_END ']'
 
 void interpret(const char* code) {
-    char memory[SIZE];
-    int pointer = 0;
-
+    char tape[SIZE];
+    int ptr = 0;
     int loop_stack[SIZE];
     int loop_index = 0;
 
-    for (int i = 0; code[i] != '\0'; i++) {
+    for (int i = 0; code[i] != '\0'; ++i) {
         switch (code[i]) {
-            case '>':
-                pointer++;
-                break;
-            case '<':
-                pointer--;
-                break;
-            case '+':
-                memory[pointer]++;
-                break;
-            case '-':
-                memory[pointer]--;
-                break;
-            case '.':
-                putchar(memory[pointer]);
-                break;
-            case ',':
-                char c = getchar();
-                memory[pointer] = c;
-                break;
-            case '[':
-                if (memory[pointer] == 0) {
+            case NEXT: ptr++; break;
+            case PREV: ptr--; break;
+            case INCR: tape[ptr]++; break;
+            case DECR: tape[ptr]--; break;
+            case OUTC: putchar(tape[ptr]); break;
+            case INPC: tape[ptr] = getchar(); break;
+            case LOOP_START:
+                if (!tape[ptr]) {
                     int count = 1;
-                    while (count > 0) {
-                        i++;
-                        if (code[i] == '[') {
-                            count++;
-                        } else if (code[i] == ']') {
-                            count--;
-                        }
+                    while (count) {
+                        count += (code[++i] == LOOP_START) - (code[i] == LOOP_END);
                     }
                 } else {
                     loop_stack[loop_index++] = i;
                 }
                 break;
-            case ']':
-                if (memory[pointer] != 0) {
+            case LOOP_END:
+                if (tape[ptr]) {
                     i = loop_stack[loop_index - 1];
                 } else {
                     loop_index--;
@@ -57,25 +45,17 @@ void interpret(const char* code) {
             default:
                 break;
         }
-
-        if (pointer < 0) {
-            pointer = 0;
-        } else if (pointer >= SIZE) {
-            pointer = SIZE - 1;
-        }
     }
 }
 
 int main(int argc, char *argv[]) {
     if (argc != 2) {
-        printf("Usage: %s <file_path_to_txt_file>\n", argv[0]);
+        fprintf(stderr, "Usage: %s <path_to_bf_file>\n", argv[0]);
         return 1;
     }
 
-    const char* file_path = argv[1];
-
-    FILE *fptr = fopen(file_path, "r");
-    if (fptr == NULL) {
+    FILE *fptr;
+    if ((fptr = fopen(argv[1], "r")) == NULL) {
         perror("Error opening file");
         return 1;
     }
@@ -85,10 +65,9 @@ int main(int argc, char *argv[]) {
     rewind(fptr);
 
     char *code = (char *) malloc(file_size + 1);
-    size_t bytes_read = fread(code, sizeof(char), file_size, fptr);
-    code[file_size] = '\0';
-
+    fread(code, 1, file_size, fptr);
     fclose(fptr);
+    code[file_size] = '\0';
 
     interpret(code);
 
