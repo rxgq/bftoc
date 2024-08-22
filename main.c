@@ -1,23 +1,9 @@
-#include <stdio.h>
-#include <string.h>
+#include<stdio.h>
 
-int main() {
-    char *bf = "++++++++++[>+++++++>++++++++++>+++>+<<<<-]>++.>+.+++++++..+++.>++.<<+++++++++++++++.>.+++.------.--------.>+.>.";
-    FILE *f = fopen("out.c", "w");
-    fprintf(f, "#include<stdio.h>\n\nint main(){char t[256]={0};char*p=t;\n");
-    
-    for (int i = 0; i < strlen(bf); i++) {
-        if (bf[i] == '+') fprintf(f, "++*p;\n");
-        else if (bf[i] == '-') fprintf(f, "--*p;\n");
-        else if (bf[i] == '<') fprintf(f, "p--;\n");
-        else if (bf[i] == '>') fprintf(f, "p++;\n");
-        else if (bf[i] == '.') fprintf(f, "putchar(*p);\n");
-        else if (bf[i] == ',') fprintf(f, "*p=getchar();\n");
-        else if (bf[i] == '[') fprintf(f, "while(*p){\n");
-        else if (bf[i] == ']') fprintf(f, "}\n");
-    }
-    
-    fprintf(f, "return 0;\n}");
-    fclose(f);
-    return 0;
+void main() {
+    FILE*f=fopen("o.c","w"),*in=fopen("c.bf","r");char b[1024];
+    fprintf(f,"#include<stdio.h>\nvoid main(){char t[1024]={0},*p=t;");
+    while(fgets(b,sizeof(b),in)) for(char*c=b;*c;c++)
+        fprintf(f,*c=='+'?"++*p;":*c=='-'?"--*p;":*c=='<'?"p--;":*c=='>'?"p++;":*c=='.'?"putchar(*p);":*c==','?"*p=getchar();":*c=='['?"while(*p){":*c==']'?"}":"");
+    fprintf(f,"}");
 }
