@@ -24,7 +24,7 @@ This repository contains a _very_ concise and simple Brainfuck compiler written 
   ./main.exe
   ```
 
-  Compile the generate C program:
+  Compile the generated C program:
 
   ```sh
   gcc o.c -o o
