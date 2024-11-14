@@ -1,6 +1,6 @@
 # Brainfuck Compiler
 
-This repository contains a _very_ concise and simple Brainfuck compiler written in C. The compiler reads Brainfuck source code from a file and generates a functionally equivalent C program. This is meant as more of an art piece than a program.
+This repository contains a minified Brainfuck compiler written in C. The compiler reads Brainfuck source code from a file and generates a functionally equivalent C program. This is meant as a toy project rather than a useful program.
 
 ## Getting Started
 
